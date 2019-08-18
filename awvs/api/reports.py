@@ -66,7 +66,6 @@ class AwvsReports(object):
     
     def download_report(self, report_id):
         path = "/reports/{}".format(report_id)
-        print(path)
         requests.get(self.api+path, headers=self.headers, timeout=10, verify=False)
 
         while True:
