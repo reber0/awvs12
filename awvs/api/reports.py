@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 19:40:58
-@LastEditTime: 2019-08-18 19:04:17
+@LastEditTime: 2019-08-19 10:59:56
 '''
 
 import time
@@ -66,19 +66,19 @@ class AwvsReports(object):
             return ("completed", report_id)
     
     def download_report(self, report_id):
-        path = "/reports/{}".format(report_id)
-        requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
-
         while True:
             time.sleep(3)
+            path = "/reports/{}".format(report_id)
             resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
             result = resp.json()
-            if result.get("status") == "completed":
-                target = result.get("source").get("description")
-                date = result.get("generation_date")[:10].replace("-","_")+"_"
-                template_name = result.get("template_name").replace(" ","_")+"_"
 
-                filename = date+template_name+urlparse(target).netloc.replace(".","_")+".pdf"
+            if result.get("status") == "completed":
+                date = time.strftime("%Y%m%d%H%M", time.localtime())
+                target = result.get("source").get("description")
+                target = urlparse(target).netloc.replace(".","_").split(";")[0]
+                template_name = result.get("template_name").replace(" ","_")
+
+                filename = "{}-{}-{}.pdf".format(date,target,template_name)
                 download_url = self.api+result.get("download")[1].replace("/api/v1", "")
 
                 with open("./reports/"+filename, "wb") as f:
