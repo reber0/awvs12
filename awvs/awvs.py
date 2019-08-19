@@ -40,6 +40,10 @@ class AwvsModule(object):
         target_id = self.targets.get_target_id(target)
         self.scans.add_scan(target_id, scan_type)
 
+    def abort_scan(self, target):
+        scan_id, scan_session_id = self.scans.get_scan_and_session_id(target)
+        self.scans.abort_scan(scan_id)
+
     def delete_scan(self, target):
         scan_id, scan_session_id = self.scans.get_scan_and_session_id(target)
         self.scans.delete_scan(scan_id)
@@ -63,6 +67,7 @@ if __name__ == "__main__":
     awvs.add_target(target)
     # awvs.delete_target(target)
     # awvs.add_scan(target)
+    # awvs.abort_scan(target)
     # awvs.delete_scan(target)
     # awvs.get_vulns(target)
-    awvs.download_report(target)
+    # awvs.download_report(target)

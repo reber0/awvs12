@@ -60,7 +60,11 @@ class AwvsScans(object):
         })
         resp = requests.post(self.api+"/scans", data=data, headers=self.headers, timeout=10, verify=False)
         return resp.json()
-    
+
+    def abort_scan(self, target_id):
+        path = "/scans/{}/abort".format(target_id)
+        requests.post(self.api+path, headers=self.headers, timeout=10, verify=False)
+
     def delete_scan(self, scan_id):
         path = "/scans/{}".format(scan_id)
         requests.delete(self.api+path, headers=self.headers, timeout=10, verify=False)
