@@ -7,6 +7,7 @@
 @LastEditTime: 2019-08-18 02:58:12
 '''
 
+from setting import TIMEOUT
 from pprint import pprint
 import json
 import requests
@@ -24,7 +25,7 @@ class AwvsVulns(object):
 
     def get_single_vuln(self, vuln_id):
         path = "/vulnerabilities/{}".format(vuln_id)
-        resp = requests.get(self.api+path, headers=self.headers, timeout=10, verify=False)
+        resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
         result = resp.json()
 
         script = result.get("source") #使用的脚本
@@ -39,7 +40,7 @@ class AwvsVulns(object):
     #按状态和等级获取所有(不管是那个target的)的漏洞
     def get_some_vulns(self, target_id, status, severity):
         path = "/vulnerabilities?q=status:{};severity:{};target_id:{}".format(status, severity, target_id)
-        resp = requests.get(self.api+path, headers=self.headers, timeout=10, verify=False)
+        resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
         return resp.json()
 
     def get_all_vulns(self, target_id, status):

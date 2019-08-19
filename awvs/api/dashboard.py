@@ -7,6 +7,7 @@
 @LastEditTime: 2019-08-17 10:39:35
 '''
 
+from setting import TIMEOUT
 from pprint import pprint
 import requests
 requests.packages.urllib3.disable_warnings()
@@ -22,15 +23,15 @@ class AwvsDashboard(object):
         }
 
     def info(self):
-        resp = requests.get(self.api+"/info", headers=self.headers, timeout=10, verify=False)
+        resp = requests.get(self.api+"/info", headers=self.headers, timeout=TIMEOUT, verify=False)
         return resp.json()
     
     def account(self):
-        resp = requests.get(self.api+"/me", headers=self.headers, timeout=10, verify=False)
+        resp = requests.get(self.api+"/me", headers=self.headers, timeout=TIMEOUT, verify=False)
         return resp.json()
     
     def stats(self):
-        resp = requests.get(self.api+"/me/stats", headers=self.headers, timeout=10, verify=False)
+        resp = requests.get(self.api+"/me/stats", headers=self.headers, timeout=TIMEOUT, verify=False)
         return resp.json()
 
 if __name__ == "__main__":

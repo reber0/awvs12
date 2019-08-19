@@ -7,6 +7,7 @@
 @LastEditTime: 2019-08-17 19:32:30
 '''
 
+from setting import TIMEOUT
 from pprint import pprint
 import json
 import requests
@@ -31,12 +32,12 @@ class AwvsScans(object):
         }
 
     def get_all_scan_info(self):
-        resp = requests.get(self.api+"/scans", headers=self.headers, timeout=10, verify=False)
+        resp = requests.get(self.api+"/scans", headers=self.headers, timeout=TIMEOUT, verify=False)
         return resp.json()
 
     def get_single_scan_info(self, scan_id):
         path = "/scans/{}".format(scan_id)
-        resp = requests.get(self.api+path, headers=self.headers, timeout=10, verify=False)
+        resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
         return resp.json()
 
     def get_scan_and_session_id(self, target):
@@ -58,20 +59,20 @@ class AwvsScans(object):
                 "time_sensitive": False
             }
         })
-        resp = requests.post(self.api+"/scans", data=data, headers=self.headers, timeout=10, verify=False)
+        resp = requests.post(self.api+"/scans", data=data, headers=self.headers, timeout=TIMEOUT, verify=False)
         return resp.json()
 
     def abort_scan(self, target_id):
         path = "/scans/{}/abort".format(target_id)
-        requests.post(self.api+path, headers=self.headers, timeout=10, verify=False)
+        requests.post(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
 
     def delete_scan(self, scan_id):
         path = "/scans/{}".format(scan_id)
-        requests.delete(self.api+path, headers=self.headers, timeout=10, verify=False)
+        requests.delete(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
 
     def get_single_vuln(self, scan_id, scan_session_id, vuln_id):
         path = "/scans/{}/results/{}/vulnerabilities/{}".format(scan_id, scan_session_id, vuln_id)
-        resp = requests.get(self.api+path, headers=self.headers, timeout=10, verify=False)
+        resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
         result = resp.json()
 
         script = result.get("source") #使用的脚本
@@ -86,7 +87,7 @@ class AwvsScans(object):
     #只能获取第一页的漏洞，漏洞数量多的话获取不完，可以用vulnerabilities模块获取
     def get_all_vuln(self, scan_id, scan_session_id):
         path = "/scans/{}/results/{}/vulnerabilities".format(scan_id, scan_session_id)
-        resp = requests.get(self.api+path, headers=self.headers, timeout=10, verify=False)
+        resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
         for vuln in resp.json().get("vulnerabilities"):
             vuln_id = vuln.get("vuln_id")
             # if vuln_id == "2112176097146701028":

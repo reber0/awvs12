@@ -8,6 +8,7 @@
 '''
 
 import time
+from setting import TIMEOUT
 from pprint import pprint
 from urllib.parse import urlparse
 import json
@@ -44,7 +45,7 @@ class AwvsReports(object):
         self.scans = AwvsScans(api_url, api_key)
     
     def get_all_report(self):
-        resp = requests.get(self.api+"/reports", headers=self.headers, timeout=10, verify=False)
+        resp = requests.get(self.api+"/reports", headers=self.headers, timeout=TIMEOUT, verify=False)
         return resp.json()
 
     def create_report(self, template_type, scan_id):
@@ -60,17 +61,17 @@ class AwvsReports(object):
                     "id_list":[scan_id]
                 }
             })
-            resp = requests.post(self.api+"/reports", data=data, headers=self.headers, timeout=10, verify=False)
+            resp = requests.post(self.api+"/reports", data=data, headers=self.headers, timeout=TIMEOUT, verify=False)
             report_id = resp.headers.get("Location").replace("/api/v1/reports/","")
             return ("completed", report_id)
     
     def download_report(self, report_id):
         path = "/reports/{}".format(report_id)
-        requests.get(self.api+path, headers=self.headers, timeout=10, verify=False)
+        requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
 
         while True:
             time.sleep(3)
-            resp = requests.get(self.api+path, headers=self.headers, timeout=10, verify=False)
+            resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
             result = resp.json()
             if result.get("status") == "completed":
                 target = result.get("source").get("description")
@@ -81,7 +82,7 @@ class AwvsReports(object):
                 download_url = self.api+result.get("download")[1].replace("/api/v1", "")
 
                 with open("./reports/"+filename, "wb") as f:
-                    resp = requests.get(download_url, headers=self.headers, timeout=10, verify=False)
+                    resp = requests.get(download_url, headers=self.headers, timeout=TIMEOUT, verify=False)
                     f.write(resp.content)
                 break
 
