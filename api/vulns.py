@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 18:07:06
-@LastEditTime: 2019-08-18 02:58:12
+@LastEditTime: 2019-11-28 21:53:07
 '''
 
 from setting import TIMEOUT
@@ -37,13 +37,19 @@ class AwvsVulns(object):
 
         return vt_name, vul_level, affects_url, affects_detail, request
 
-    #按状态和等级获取所有(不管是那个target的)的漏洞
-    def get_some_vulns(self, target_id, status, severity):
+    #按状态和等级获取某个target的漏洞
+    def get_target_vulns_by_status_severity(self, target_id, status, severity):
+        '''
+        target_id   string  target_id
+        status      string  状态;[open !open fixed ignored false_positive]
+        severity    int     危害等级;[3 2 1 0] 高中低无危害
+        '''
         path = "/vulnerabilities?q=status:{};severity:{};target_id:{}".format(status, severity, target_id)
         resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
         return resp.json()
 
-    def get_all_vulns(self, target_id, status):
+    #按状态获取某个target的漏洞
+    def get_target_vulns(self, target_id, status):
         def print_vul(vul_detail):
             vt_name, vul_level, affects_url, affects_detail, request = vul_detail
             print("*"*130)
@@ -54,10 +60,10 @@ class AwvsVulns(object):
             print("漏洞参数: {}".format(affects_detail))
             print("请求包:\n{}".format(request))
 
-        high = self.get_some_vulns(target_id, status, 3)
-        medium = self.get_some_vulns(target_id, status, 2)
-        low = self.get_some_vulns(target_id, status, 1)
-        info = self.get_some_vulns(target_id, status, 0)
+        high = self.get_target_vulns_by_status_severity(target_id, status, 3)
+        medium = self.get_target_vulns_by_status_severity(target_id, status, 2)
+        low = self.get_target_vulns_by_status_severity(target_id, status, 1)
+        info = self.get_target_vulns_by_status_severity(target_id, status, 0)
 
         for vuln in high.get("vulnerabilities"):
             vuln_id = vuln.get("vuln_id")
@@ -77,6 +83,12 @@ class AwvsVulns(object):
             vul_detail = self.get_single_vuln(vuln_id)
             print_vul(vul_detail)
 
+        for vuln in info.get("vulnerabilities"):
+            vuln_id = vuln.get("vuln_id")
+
+            vul_detail = self.get_single_vuln(vuln_id)
+            print_vul(vul_detail)
+
 
 if __name__ == "__main__":
     from setting import API_URL
@@ -87,7 +99,7 @@ if __name__ == "__main__":
     target_id = targets.get_target_id("vulnweb.com")
 
     vuln = AwvsVulns(API_URL, API_KEY)
-    # pprint(vuln.get_some_vulns(target_id,"open",2))
+    # pprint(vuln.get_target_vulns_by_status_severity(target_id,"open",2))
     vuln.get_all_vulns(target_id, "open")
     # vuln.get_single_vuln(target_id)
 
