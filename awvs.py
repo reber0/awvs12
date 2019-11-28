@@ -4,13 +4,14 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-18 02:55:39
-@LastEditTime: 2019-08-18 19:03:09
+@LastEditTime: 2019-11-28 21:49:40
 '''
 
 import sys
 sys.dont_write_bytecode = True  # 不生成pyc文件
 
 from pprint import pprint
+from api.dashboard import AwvsDashboard
 from api.targets import AwvsTargets
 from api.scans import AwvsScans
 from api.vulns import AwvsVulns
@@ -24,33 +25,52 @@ class AwvsModule(object):
         super(AwvsModule, self).__init__()
         self.api_url = API_URL
         self.api_key = API_KEY
+        self.dashboard = AwvsDashboard(self.api_url, self.api_key)
         self.targets = AwvsTargets(self.api_url, self.api_key)
         self.scans = AwvsScans(self.api_url, self.api_key)
         self.vulns = AwvsVulns(self.api_url, self.api_key)
         self.reports = AwvsReports(self.api_url, self.api_key)
 
-    def add_target(self, target, criticality="10", description="awvs_scan"):
-        self.targets.add_target(target, criticality, description)
+    def start_scan(self, target, criticality="10", description="awvs_scan", scan_type="FS"):
+        """
+        这里有两步操作，先添加 target，然后添加 scan
+        """
+        target_info = self.targets.add_target(target, criticality, description)
+        target_id = target_info.get("target_id")
 
-    def delete_target(self, target):
+        self.scans.add_scan(target_id, scan_type)
+
+        #查看 scan 是否创建成功，成功返回 True
+        all_scan_info = self.scans.get_all_scan_info()
+        for scan_info in all_scan_info.get("scans"):
+            if target_id == scan_info.get("target_id"):
+                scan_id = scan_info.get("scan_id")
+                scan_session_id = scan_info.get("current_session").get("scan_session_id")
+                if scan_id and scan_session_id:
+                    return True
+                else:
+                    return False
+
+    def get_scan_running_count(self):
+        dashboard_stats = self.dashboard.stats()
+        return dashboard_stats.get("scans_running_count")
+
+    def get_target_vuls(self, target):
+        target_id = self.targets.get_target_id(target)
+        scan_id, scan_session_id = self.scans.get_scan_and_session_id(target)
+        self.vulns.get_target_vulns(target_id, status="open")
+
+    def delete_scan(self, target):
+        """
+        这里的 delete_scan 其实是delete target，
+        因为 target 被删除时该 target 下所有的 scan 都会被删除
+        """
         target_id = self.targets.get_target_id(target)
         self.targets.delete_target(target_id)
-
-    def add_scan(self, target, scan_type="FS"):
-        target_id = self.targets.get_target_id(target)
-        self.scans.add_scan(target_id, scan_type)
 
     def abort_scan(self, target):
         scan_id, scan_session_id = self.scans.get_scan_and_session_id(target)
         self.scans.abort_scan(scan_id)
-
-    def delete_scan(self, target):
-        scan_id, scan_session_id = self.scans.get_scan_and_session_id(target)
-        self.scans.delete_scan(scan_id)
-
-    def get_vulns(self, target, status="open"):
-        target_id = self.targets.get_target_id(target)
-        self.vulns.get_all_vulns(target_id, status)
 
     def download_report(self, target, template_type="AI"):
         scan_id, scan_session_id = self.scans.get_scan_and_session_id(target)
@@ -64,10 +84,9 @@ class AwvsModule(object):
 if __name__ == "__main__":
     target = sys.argv[1]
     awvs = AwvsModule(API_URL, API_KEY)
-    awvs.add_target(target)
-    # awvs.delete_target(target)
-    # awvs.add_scan(target)
+    # awvs.start_scan(target)
+    # print(awvs.get_scan_running_count())
     # awvs.abort_scan(target)
-    # awvs.delete_scan(target)
-    # awvs.get_vulns(target)
+    # awvs.get_target_vuls(target)
     # awvs.download_report(target)
+    # awvs.delete_scan(target)
