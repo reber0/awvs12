@@ -4,12 +4,13 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 13:49:57
-@LastEditTime: 2019-08-17 19:32:30
+@LastEditTime: 2019-11-28 21:51:37
 '''
 
 from setting import TIMEOUT
 from pprint import pprint
 import json
+import time
 import requests
 requests.packages.urllib3.disable_warnings()
 
@@ -31,6 +32,28 @@ class AwvsScans(object):
             "CO": "11111111-1111-1111-1111-111111111117" #Crawl Only
         }
 
+    def add_scan(self, target_id, scan_type="FS"):
+        data = json.dumps({
+            "target_id": target_id,
+            "profile_id": self.scan_type.get(scan_type),
+            "schedule": {
+                "disable": False,
+                "start_date": None,
+                "time_sensitive": False
+            }
+        })
+        resp = requests.post(self.api+"/scans", data=data, headers=self.headers, timeout=TIMEOUT, verify=False)
+        time.sleep(2) #等扫描开始后再返回
+        return resp.json()
+
+    def abort_scan(self, target_id):
+        path = "/scans/{}/abort".format(target_id)
+        requests.post(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
+
+    def delete_scan(self, scan_id):
+        path = "/scans/{}".format(scan_id)
+        requests.delete(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
+
     def get_all_scan_info(self):
         resp = requests.get(self.api+"/scans", headers=self.headers, timeout=TIMEOUT, verify=False)
         return resp.json()
@@ -49,27 +72,6 @@ class AwvsScans(object):
                 return scan_id, scan_session_id
         return None
 
-    def add_scan(self, target_id, scan_type="FS"):
-        data = json.dumps({
-            "target_id": target_id,
-            "profile_id": self.scan_type.get(scan_type),
-            "schedule": {
-                "disable": False,
-                "start_date": None,
-                "time_sensitive": False
-            }
-        })
-        resp = requests.post(self.api+"/scans", data=data, headers=self.headers, timeout=TIMEOUT, verify=False)
-        return resp.json()
-
-    def abort_scan(self, target_id):
-        path = "/scans/{}/abort".format(target_id)
-        requests.post(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
-
-    def delete_scan(self, scan_id):
-        path = "/scans/{}".format(scan_id)
-        requests.delete(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
-
     def get_single_vuln(self, scan_id, scan_session_id, vuln_id):
         path = "/scans/{}/results/{}/vulnerabilities/{}".format(scan_id, scan_session_id, vuln_id)
         resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
@@ -84,7 +86,7 @@ class AwvsScans(object):
 
         return vt_name, vul_level, affects_url, affects_detail, request
 
-    #只能获取第一页的漏洞，漏洞数量多的话获取不完，可以用vulnerabilities模块获取
+    #只能获取第一页的100个漏洞，漏洞数量多的话获取不完，可以用vulnerabilities模块获取
     def get_all_vuln(self, scan_id, scan_session_id):
         path = "/scans/{}/results/{}/vulnerabilities".format(scan_id, scan_session_id)
         resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
