@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 19:40:58
-@LastEditTime : 2020-02-25 15:23:25
+@LastEditTime : 2020-02-25 17:19:32
 '''
 
 import time
@@ -12,7 +12,11 @@ import json
 from urllib.parse import urlparse
 
 from libs.request import req as requests
-from api.scans import AwvsScans
+
+try:
+    from api.scans import AwvsScans
+except ModuleNotFoundError:
+    from awvs12.api.scans import AwvsScans
 
 
 class AwvsReports(object):
