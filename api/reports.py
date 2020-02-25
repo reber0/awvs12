@@ -8,7 +8,7 @@
 '''
 
 import time
-from setting import TIMEOUT
+from config import TIMEOUT
 from pprint import pprint
 from urllib.parse import urlparse
 import json

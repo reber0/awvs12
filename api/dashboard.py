@@ -4,10 +4,10 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 09:45:15
-@LastEditTime: 2019-08-17 10:39:35
+@LastEditTime : 2020-02-25 15:03:52
 '''
 
-from setting import TIMEOUT
+from config import TIMEOUT
 from pprint import pprint
 import requests
 requests.packages.urllib3.disable_warnings()

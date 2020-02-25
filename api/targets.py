@@ -7,7 +7,7 @@
 @LastEditTime: 2019-08-18 03:41:43
 '''
 
-from setting import TIMEOUT
+from config import TIMEOUT
 from pprint import pprint
 import json
 import requests

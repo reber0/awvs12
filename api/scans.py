@@ -4,10 +4,10 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 13:49:57
-@LastEditTime: 2019-11-28 21:51:37
+@LastEditTime : 2020-02-25 15:04:03
 '''
 
-from setting import TIMEOUT
+from config import TIMEOUT
 from pprint import pprint
 import json
 import time
