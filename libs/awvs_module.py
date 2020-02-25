@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-18 02:55:39
-@LastEditTime : 2020-02-25 22:08:07
+@LastEditTime : 2020-02-25 22:46:24
 '''
 
 try:
@@ -53,9 +53,9 @@ class AwvsModule(object):
                 if scan_id and scan_session_id:
                     return scan_id, scan_session_id
 
-    def get_scan_running_count(self):
+    def get_stats(self):
         dashboard_stats = self.dashboard.stats()
-        return dashboard_stats.get("scans_running_count")
+        return dashboard_stats
 
     def get_target_vuls(self, target):
         target_id = self.targets.get_target_id(target)
