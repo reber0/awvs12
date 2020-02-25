@@ -4,23 +4,22 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-18 02:55:39
-@LastEditTime : 2020-02-25 12:36:11
+@LastEditTime : 2020-02-25 15:48:44
 '''
 
 import sys
 sys.dont_write_bytecode = True  # 不生成pyc文件
 
-from pprint import pprint
-from api.dashboard import AwvsDashboard
-from api.targets import AwvsTargets
-from api.scans import AwvsScans
-from api.vulns import AwvsVulns
 from api.reports import AwvsReports
-from config import API_URL
-from config import API_KEY
+from api.vulns import AwvsVulns
+from api.scans import AwvsScans
+from api.targets import AwvsTargets
+from api.dashboard import AwvsDashboard
+
 
 class AwvsModule(object):
     """docstring for AwvsModule"""
+
     def __init__(self, API_URL, API_KEY):
         super(AwvsModule, self).__init__()
         self.api_url = API_URL
@@ -40,16 +39,15 @@ class AwvsModule(object):
 
         self.scans.add_scan(target_id, scan_type)
 
-        #查看 scan 是否创建成功，成功返回 True
+        # 查看 scan 是否创建成功，成功返回 True
         all_scan_info = self.scans.get_all_scan_info()
         for scan_info in all_scan_info.get("scans"):
             if target_id == scan_info.get("target_id"):
                 scan_id = scan_info.get("scan_id")
-                scan_session_id = scan_info.get("current_session").get("scan_session_id")
+                scan_session_id = scan_info.get(
+                    "current_session").get("scan_session_id")
                 if scan_id and scan_session_id:
-                    return True
-                else:
-                    return False
+                    return scan_id, scan_session_id
 
     def get_scan_running_count(self):
         dashboard_stats = self.dashboard.stats()
@@ -59,6 +57,7 @@ class AwvsModule(object):
         target_id = self.targets.get_target_id(target)
         scan_id, scan_session_id = self.scans.get_scan_and_session_id(target)
         self.vulns.get_target_vulns(target_id, status="open")
+        return scan_id, scan_session_id
 
     def delete_scan(self, target):
         """
@@ -74,7 +73,8 @@ class AwvsModule(object):
 
     def download_report(self, target, template_type="AI"):
         scan_id, scan_session_id = self.scans.get_scan_and_session_id(target)
-        scan_status, report_id = self.reports.create_report(template_type, scan_id)
+        scan_status, report_id = self.reports.create_report(
+            template_type, scan_id)
         if report_id:
             self.reports.download_report(report_id)
         else:
@@ -82,6 +82,10 @@ class AwvsModule(object):
 
 
 if __name__ == "__main__":
+    from pprint import pprint
+    from config import API_KEY
+    from config import API_URL
+
     target = sys.argv[1]
     awvs = AwvsModule(API_URL, API_KEY)
     # awvs.start_scan(target)
