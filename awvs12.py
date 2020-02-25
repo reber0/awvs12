@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-18 02:55:39
-@LastEditTime: 2020-02-25 12:18:40
+@LastEditTime : 2020-02-25 12:36:11
 '''
 
 import sys
@@ -16,8 +16,8 @@ from api.targets import AwvsTargets
 from api.scans import AwvsScans
 from api.vulns import AwvsVulns
 from api.reports import AwvsReports
-from setting import API_URL
-from setting import API_KEY
+from config import API_URL
+from config import API_KEY
 
 class AwvsModule(object):
     """docstring for AwvsModule"""
