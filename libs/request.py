@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-11-14 12:19:21
-@LastEditTime : 2020-02-25 15:45:12
+@LastEditTime : 2020-02-25 16:41:55
 '''
 
 from urllib.parse import quote
@@ -12,8 +12,12 @@ import urllib3
 import requests
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-from config import timeout
-from libs.util import get_headers
+try:
+    from config import timeout
+    from libs.util import get_headers
+except ModuleNotFoundError:
+    from awvs12.config import timeout
+    from awvs12.libs.util import get_headers
 
 
 class NoQuoteSession(requests.Session):
