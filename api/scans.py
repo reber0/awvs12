@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 13:49:57
-@LastEditTime : 2020-02-25 15:25:13
+@LastEditTime : 2020-02-25 22:48:03
 '''
 
 import json
@@ -72,7 +72,6 @@ class AwvsScans(object):
                 scan_session_id = _.get(
                     "current_session").get("scan_session_id")
                 return scan_id, scan_session_id
-        return None
 
     def get_single_vuln(self, scan_id, scan_session_id, vuln_id):
         path = "/scans/{}/results/{}/vulnerabilities/{}".format(
