@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 18:07:06
-@LastEditTime : 2020-02-25 15:47:13
+@LastEditTime : 2020-02-25 22:07:54
 '''
 
 import json
@@ -49,15 +49,7 @@ class AwvsVulns(object):
 
     #按状态获取某个target的漏洞
     def get_target_vulns(self, target_id, status):
-        def print_vul(vul_detail):
-            vt_name, vul_level, affects_url, affects_detail, request = vul_detail
-            print("*"*130)
-            print("Target ID: {}\nVuln ID: {}".format(target_id, vuln_id))
-            print("漏洞类型: {}".format(vt_name))
-            print("危害等级: {}".format(vul_level))
-            print("漏洞入口: {}".format(affects_url))
-            print("漏洞参数: {}".format(affects_detail))
-            print("请求包:\n{}".format(request))
+        vuln_list_detail = dict()
 
         high = self.get_target_vulns_by_status_severity(target_id, status, 3)
         medium = self.get_target_vulns_by_status_severity(target_id, status, 2)
@@ -66,27 +58,29 @@ class AwvsVulns(object):
 
         for vuln in high.get("vulnerabilities"):
             vuln_id = vuln.get("vuln_id")
-
-            vul_detail = self.get_single_vuln(vuln_id)
-            print_vul(vul_detail)
+            vuln_detail = self.get_single_vuln(vuln_id)
+            # print_vul(vuln_detail, vuln_id)
+            vuln_list_detail[vuln_id] = vuln_detail
 
         for vuln in medium.get("vulnerabilities"):
             vuln_id = vuln.get("vuln_id")
-
-            vul_detail = self.get_single_vuln(vuln_id)
-            print_vul(vul_detail)
+            vuln_detail = self.get_single_vuln(vuln_id)
+            # print_vul(vuln_detail)
+            vuln_list_detail[vuln_id] = vuln_detail
 
         for vuln in low.get("vulnerabilities"):
             vuln_id = vuln.get("vuln_id")
-
-            vul_detail = self.get_single_vuln(vuln_id)
-            print_vul(vul_detail)
+            vuln_detail = self.get_single_vuln(vuln_id)
+            # print_vul(vuln_detail)
+            vuln_list_detail[vuln_id] = vuln_detail
 
         for vuln in info.get("vulnerabilities"):
             vuln_id = vuln.get("vuln_id")
-
-            vul_detail = self.get_single_vuln(vuln_id)
-            print_vul(vul_detail)
+            vuln_detail = self.get_single_vuln(vuln_id)
+            # print_vul(vuln_detail)
+            vuln_list_detail[vuln_id] = vuln_detail
+        
+        return target_id, vuln_list_detail
 
 
 if __name__ == "__main__":

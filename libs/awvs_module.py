@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-18 02:55:39
-@LastEditTime : 2020-02-25 16:48:35
+@LastEditTime : 2020-02-25 22:08:07
 '''
 
 try:
@@ -34,7 +34,7 @@ class AwvsModule(object):
         self.vulns = AwvsVulns(self.api_url, self.api_key)
         self.reports = AwvsReports(self.api_url, self.api_key)
 
-    def start_scan(self, target, criticality="10", description="awvs_scan", scan_type="FS"):
+    def start_scan(self, target=None, criticality="10", description="awvs_scan", scan_type="FS"):
         """
         这里有两步操作，先添加 target，然后添加 scan
         """
@@ -60,8 +60,9 @@ class AwvsModule(object):
     def get_target_vuls(self, target):
         target_id = self.targets.get_target_id(target)
         scan_id, scan_session_id = self.scans.get_scan_and_session_id(target)
-        self.vulns.get_target_vulns(target_id, status="open")
-        return scan_id, scan_session_id
+        target_id, vuln_list_detail = self.vulns.get_target_vulns(target_id, status="open")
+
+        return target_id, vuln_list_detail
 
     def delete_scan(self, target):
         """
