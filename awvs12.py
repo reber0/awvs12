@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-18 02:55:39
-@LastEditTime : 2020-02-25 22:47:02
+@LastEditTime : 2020-02-25 23:43:27
 '''
 
 import sys
@@ -31,7 +31,7 @@ def main(target="http://wyb0.com", api_url=None, api_key=None):
     # awvs.start_scan(target)
 
     # 获取当前扫描任务数
-    # dashboard_stats = awvs.get_stats()
+    # dashboard_stats = awvs.dashboard.stats()
     # scans_running_count = dashboard_stats.get("scans_running_count")
     # pprint(scans_running_count)
 
