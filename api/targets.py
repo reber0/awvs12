@@ -4,17 +4,17 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 10:41:19
-@LastEditTime: 2019-08-18 03:41:43
+@LastEditTime : 2020-02-25 15:26:22
 '''
 
-from config import TIMEOUT
-from pprint import pprint
 import json
-import requests
-requests.packages.urllib3.disable_warnings()
+
+from libs.request import req as requests
+
 
 class AwvsTargets(object):
     """docstring for AwvsTargets"""
+
     def __init__(self, api_url, api_key):
         super(AwvsTargets, self).__init__()
         self.api = api_url
@@ -24,10 +24,10 @@ class AwvsTargets(object):
         }
 
     def get_all_target_info(self):
-        resp = requests.get(self.api+"/targets", headers=self.headers, timeout=TIMEOUT, verify=False)
+        resp = requests.get(self.api+"/targets", headers=self.headers)
         return resp.json()
 
-    #不太好用，如果target没有开始扫描或者开始扫描但是没有漏洞信息，用这个接口是得不到信息的
+    # 不太好用，如果target没有开始扫描或者开始扫描但是没有漏洞信息，用这个接口是得不到信息的
     def get_single_target_info_api(self, text_search, threat="1,2,3", criticality="10,20,30"):
         '''
         threat        int     威胁等级;高->低:[3,2,1,0]
@@ -42,7 +42,7 @@ class AwvsTargets(object):
         path = "/targets?q=threat:{};criticality:{};text_search:*{}".format(
             threat, criticality, text_search
         )
-        resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
+        resp = requests.get(self.api+path, headers=self.headers)
         return resp.json()
 
     def get_single_target_info(self, target):
@@ -71,14 +71,15 @@ class AwvsTargets(object):
             "description": description,
             "criticality": criticality,
         })
-        resp = requests.post(self.api+"/targets", data=data, headers=self.headers, timeout=TIMEOUT, verify=False)
+        resp = requests.post(self.api+"/targets",
+                             data=data, headers=self.headers)
         return resp.json()
 
     def delete_target(self, target_id):
         path = "/targets/{}".format(target_id)
-        resp = requests.delete(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
+        resp = requests.delete(self.api+path, headers=self.headers)
         return resp.json()
-    
+
     def proxy(self, target_id, address="127.0.0.1", protocal="http", port=8080, username="", password=""):
         data = json.dumps({
             "proxy": {
@@ -91,12 +92,13 @@ class AwvsTargets(object):
             }
         })
         path = "/targets/{target_id}/configuration".format(target_id=target_id)
-        requests.patch(self.api+path, data=data, headers=self.headers, timeout=TIMEOUT, verify=False)
+        requests.patch(self.api+path, data=data, headers=self.headers)
 
 
 if __name__ == "__main__":
-    from setting import API_URL
-    from setting import API_KEY
+    from pprint import pprint
+    from config import API_URL
+    from config import API_KEY
 
     targets = AwvsTargets(API_URL, API_KEY)
     # pprint(targets.get_all_target_info())
@@ -106,4 +108,3 @@ if __name__ == "__main__":
     pprint(targets.get_single_target_info("http://testphp.vulnweb.com"))
     # print(targets.delete_target(target_id))
     # targets.proxy(target_id)
-

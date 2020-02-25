@@ -4,14 +4,13 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 18:07:06
-@LastEditTime : 2020-02-25 15:04:14
+@LastEditTime : 2020-02-25 15:47:13
 '''
 
-from config import TIMEOUT
-from pprint import pprint
 import json
-import requests
-requests.packages.urllib3.disable_warnings()
+
+from libs.request import req as requests
+
 
 class AwvsVulns(object):
     """docstring for AwvsVulns"""
@@ -25,7 +24,7 @@ class AwvsVulns(object):
 
     def get_single_vuln(self, vuln_id):
         path = "/vulnerabilities/{}".format(vuln_id)
-        resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
+        resp = requests.get(self.api+path, headers=self.headers)
         result = resp.json()
 
         script = result.get("source") #使用的脚本
@@ -45,7 +44,7 @@ class AwvsVulns(object):
         severity    int     危害等级;[3 2 1 0] 高中低无危害
         '''
         path = "/vulnerabilities?q=status:{};severity:{};target_id:{}".format(status, severity, target_id)
-        resp = requests.get(self.api+path, headers=self.headers, timeout=TIMEOUT, verify=False)
+        resp = requests.get(self.api+path, headers=self.headers)
         return resp.json()
 
     #按状态获取某个target的漏洞
@@ -91,6 +90,7 @@ class AwvsVulns(object):
 
 
 if __name__ == "__main__":
+    from pprint import pprint
     from setting import API_URL
     from setting import API_KEY
 
