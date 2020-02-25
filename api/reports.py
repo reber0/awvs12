@@ -4,7 +4,7 @@
 @Author: reber
 @Mail: reber0ask@qq.com
 @Date: 2019-08-17 19:40:58
-@LastEditTime : 2020-02-25 17:19:32
+@LastEditTime : 2020-02-25 22:11:06
 '''
 
 import time
@@ -81,10 +81,10 @@ class AwvsReports(object):
                 date = time.strftime("%Y%m%d%H%M", time.localtime())
                 target = result.get("source").get("description")
                 target = urlparse(target).netloc.replace(
-                    ".", "_").split(";")[0]
-                template_name = result.get("template_name").replace(" ", "_")
+                    ".", "-").split(";")[0]
+                template_name = result.get("template_name").replace(" ", "-")
 
-                filename = "{}-{}-{}.pdf".format(date, target, template_name)
+                filename = "{}_{}_{}.pdf".format(date, target, template_name)
                 download_url = self.api + \
                     result.get("download")[1].replace("/api/v1", "")
 
